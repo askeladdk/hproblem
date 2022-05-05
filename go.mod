@@ -1,3 +1,3 @@
-module github.com/askeladdk/httpsyproblem
+module github.com/askeladdk/hproblem
 
 go 1.16

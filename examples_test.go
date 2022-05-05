@@ -1,4 +1,4 @@
-package httpsyproblem_test
+package hproblem_test
 
 import (
 	"fmt"
@@ -7,62 +7,58 @@ import (
 	"net/http/httptest"
 	"os"
 
-	"github.com/askeladdk/httpsyproblem"
+	"github.com/askeladdk/hproblem"
 )
 
-func ExampleWrap() {
-	// Errors are associated with 500 Internal Server Error by default.
-	err := io.EOF
-	fmt.Println(httpsyproblem.StatusCode(err), err)
-
-	// Wrap any error to associate it with a status code.
-	err = httpsyproblem.Wrap(http.StatusBadRequest, err)
-	fmt.Println(httpsyproblem.StatusCode(err), err)
-
-	// Wrapping an already wrapped error changes the status code but preserves the details.
-	err = httpsyproblem.Wrap(http.StatusNotFound, err)
-	fmt.Println(httpsyproblem.StatusCode(err), err)
-	fmt.Println(err.(*httpsyproblem.Details).Detail)
-	// Output:
-	// 500 EOF
-	// 400 Bad Request
-	// 404 Not Found
-	// EOF
-}
-
-func ExampleError_json() {
+func ExampleServeError_json() {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", nil)
 	r.Header.Set("Accept", "application/json")
 
-	err := httpsyproblem.Wrap(http.StatusBadRequest, io.EOF)
-	err.(*httpsyproblem.Details).Instance = "/products/42"
-	httpsyproblem.Serve(w, r, err)
+	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
 
 	fmt.Println(w.Result().Status)
 	_, _ = io.Copy(os.Stdout, w.Body)
+
 	// Output:
 	// 400 Bad Request
-	// {"detail":"EOF","instance":"/products/42","status":400,"title":"Bad Request","type":"about:blank"}
+	// {"detail":"Bad Request","status":400,"title":"Bad Request"}
 }
 
-func ExampleError_text() {
+func ExampleServeError_xml() {
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/", nil)
+	r.Header.Set("Accept", "text/xml")
+
+	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
+
+	fmt.Println(w.Result().Status)
+	_, _ = io.Copy(os.Stdout, w.Body)
+
+	// Output:
+	// 400 Bad Request
+	// <?xml version="1.0" encoding="UTF-8"?>
+	// <problem xmlns="urn:ietf:rfc:7807"><detail>Bad Request</detail><status>400</status><title>Bad Request</title></problem>
+}
+
+func ExampleServeError_text() {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", nil)
 
-	httpsyproblem.Serve(w, r, io.EOF)
+	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
 
 	fmt.Println(w.Result().Status)
 	_, _ = io.Copy(os.Stdout, w.Body)
+
 	// Output:
-	// 500 Internal Server Error
-	// Internal Server Error
+	// 400 Bad Request
+	// Bad Request
 }
 
 func ExampleStatusCode() {
-	fmt.Println(httpsyproblem.StatusCode(nil))
-	fmt.Println(httpsyproblem.StatusCode(io.EOF))
-	fmt.Println(httpsyproblem.StatusCode(httpsyproblem.Wrap(http.StatusBadRequest, io.EOF)))
+	fmt.Println(hproblem.StatusCode(nil))
+	fmt.Println(hproblem.StatusCode(io.EOF))
+	fmt.Println(hproblem.StatusCode(hproblem.Wrap(io.EOF, http.StatusBadRequest)))
 	// Output:
 	// 200
 	// 500
