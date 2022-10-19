@@ -11,7 +11,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"log"
+	"io"
 	"net/http"
 	"path"
 )
@@ -58,20 +58,15 @@ func serveJSON(w http.ResponseWriter, v interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/problem+json; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(statusCode)
-	if err := json.NewEncoder(w).Encode(v); err != nil {
-		log.Println("hproblem:", err)
-	}
+	_ = json.NewEncoder(w).Encode(v)
 }
 
 func serveXML(w http.ResponseWriter, v interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/problem+xml; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(statusCode)
-	if _, err := w.Write([]byte(xml.Header)); err != nil {
-		log.Println("hproblem:", err)
-	} else if err := xml.NewEncoder(w).Encode(v); err != nil {
-		log.Println("hproblem:", err)
-	}
+	_, _ = io.WriteString(w, xml.Header)
+	_ = xml.NewEncoder(w).Encode(v)
 }
 
 // Wrap associates an error with a status code.
