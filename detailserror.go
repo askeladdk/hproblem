@@ -10,12 +10,12 @@ import (
 //
 // Additional fields can be added by embedding it inside another struct.
 //
-//  type TraceDetailsError struct {
-//      *hproblem.DetailsError
-//      TraceID string `json:"trace_id" xml:"trace_id"`
-//  }
+//	type TraceDetailsError struct {
+//	    *hproblem.DetailsError
+//	    TraceID string `json:"trace_id" xml:"trace_id"`
+//	}
 //
-//  hproblem.ServeError(w, r, TraceDetailsError{})
+//	hproblem.ServeError(w, r, TraceDetailsError{})
 type DetailsError struct {
 	// A human-readable explanation specific to this occurrence of the problem.
 	Detail string `json:"detail,omitempty" xml:"detail,omitempty"`
