@@ -107,10 +107,10 @@ func StatusCode(err error) int {
 // If err implements http.Handler, its ServeHTTP method is called.
 // Otherwise, err is rendered as JSON, XML or plain text depending on the
 // request's Accept header.
-// If err is nil, it will be rendered as ErrStatusOK.
+// If err is nil, it will be rendered as StatusOK.
 func ServeError(w http.ResponseWriter, r *http.Request, err error) {
 	if err == nil {
-		err = ErrStatusOK
+		err = StatusOK
 	}
 
 	if h, ok := err.(http.Handler); ok { //nolint
@@ -119,10 +119,10 @@ func ServeError(w http.ResponseWriter, r *http.Request, err error) {
 	}
 
 	for _, accept := range r.Header["Accept"] {
-		if ok, _ := path.Match("*/*json*", accept); ok {
+		if ok, _ := path.Match("*/*json", accept); ok {
 			serveJSON(w, err, StatusCode(err))
 			return
-		} else if ok, _ := path.Match("*/*xml*", accept); ok {
+		} else if ok, _ := path.Match("*/*xml", accept); ok {
 			serveXML(w, err, StatusCode(err))
 			return
 		}
@@ -131,12 +131,12 @@ func ServeError(w http.ResponseWriter, r *http.Request, err error) {
 	http.Error(w, err.Error(), StatusCode(err))
 }
 
-// MethodNotAllowed replies to the request with ErrStatusMethodNotAllowed.
+// MethodNotAllowed replies to the request with StatusMethodNotAllowed.
 func MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	ServeError(w, r, ErrStatusMethodNotAllowed)
+	ServeError(w, r, StatusMethodNotAllowed)
 }
 
-// NotFound replies to the request with ErrStatusNotFound.
+// NotFound replies to the request with StatusNotFound.
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	ServeError(w, r, ErrStatusNotFound)
+	ServeError(w, r, StatusNotFound)
 }

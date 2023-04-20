@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -38,7 +39,7 @@ func TestServeError(t *testing.T) {
 	t.Run("Text", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest("GET", "/", nil)
-		ServeError(w, r, ErrStatusBadRequest)
+		ServeError(w, r, StatusBadRequest)
 		if w.Result().StatusCode != http.StatusBadRequest {
 			t.Fatal()
 		} else if w.Body.String() != "Bad Request\n" {

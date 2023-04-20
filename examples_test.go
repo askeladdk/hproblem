@@ -15,7 +15,7 @@ func ExampleServeError_json() {
 	r := httptest.NewRequest("GET", "/", nil)
 	r.Header.Set("Accept", "application/json")
 
-	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
+	hproblem.ServeError(w, r, hproblem.StatusBadRequest)
 
 	fmt.Println(w.Result().Status)
 	_, _ = io.Copy(os.Stdout, w.Body)
@@ -30,7 +30,7 @@ func ExampleServeError_xml() {
 	r := httptest.NewRequest("GET", "/", nil)
 	r.Header.Set("Accept", "text/xml")
 
-	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
+	hproblem.ServeError(w, r, hproblem.StatusBadRequest)
 
 	fmt.Println(w.Result().Status)
 	_, _ = io.Copy(os.Stdout, w.Body)
@@ -45,7 +45,7 @@ func ExampleServeError_text() {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", nil)
 
-	hproblem.ServeError(w, r, hproblem.ErrStatusBadRequest)
+	hproblem.ServeError(w, r, hproblem.StatusBadRequest)
 
 	fmt.Println(w.Result().Status)
 	_, _ = io.Copy(os.Stdout, w.Body)
