@@ -55,3 +55,47 @@ func TestProblemDetailsError(t *testing.T) {
 		}
 	})
 }
+
+func TestUnmarshal(t *testing.T) {
+	t.Run("json", func(t *testing.T) {
+		x := []byte(`{"detail":"error","status":400,"title":"Bad Request"}`)
+		var dt DetailsError
+		if err := dt.Unmarshal(x); err != nil {
+			t.Fatal(err)
+		}
+		if dt.Status != 400 {
+			t.Fatal()
+		}
+		if dt.Title != "Bad Request" {
+			t.Fatal()
+		}
+	})
+
+	t.Run("xml", func(t *testing.T) {
+		x := []byte(xml.Header + `<problem xmlns="urn:ietf:rfc:7807"><detail>error</detail><status>400</status><title>Bad Request</title></problem>`)
+		var dt DetailsError
+		if err := dt.Unmarshal(x); err != nil {
+			t.Fatal(err)
+		}
+		if dt.Status != 400 {
+			t.Fatal()
+		}
+		if dt.Title != "Bad Request" {
+			t.Fatal()
+		}
+	})
+
+	t.Run("error1", func(t *testing.T) {
+		var dt DetailsError
+		if err := dt.Unmarshal([]byte{}); !errors.Is(err, ErrInvalidEncoding) {
+			t.Fatal()
+		}
+	})
+
+	t.Run("error2", func(t *testing.T) {
+		var dt DetailsError
+		if err := dt.Unmarshal([]byte(`  []`)); !errors.Is(err, ErrInvalidEncoding) {
+			t.Fatal()
+		}
+	})
+}

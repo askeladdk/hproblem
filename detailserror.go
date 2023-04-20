@@ -1,8 +1,12 @@
 package hproblem
 
 import (
+	"bytes"
+	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"net/http"
+	"unicode"
 )
 
 // DetailsError implements the RFC 7807 model.
@@ -72,5 +76,25 @@ func NewDetailsError(err error) *DetailsError {
 		Status:       statusCode,
 		Title:        http.StatusText(statusCode),
 		wrappedError: err,
+	}
+}
+
+var ErrInvalidEncoding = errors.New("hproblem: invalid details error encoding")
+
+// Unmarshal parses a JSON or XML encoded details error.
+// Returns ErrInvalidEncoding if the encoding is invalid.
+func (details *DetailsError) Unmarshal(data []byte) error {
+	data = bytes.TrimLeftFunc(data, unicode.IsSpace)
+	if len(data) == 0 {
+		return ErrInvalidEncoding
+	}
+
+	switch data[0] {
+	case '{':
+		return json.Unmarshal(data, details)
+	case '<':
+		return xml.Unmarshal(data, details)
+	default:
+		return ErrInvalidEncoding
 	}
 }
