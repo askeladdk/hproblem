@@ -69,3 +69,31 @@ func TestStatusCode(t *testing.T) {
 		}
 	}
 }
+
+func TestErrorMarshalJSON(t *testing.T) {
+	err := Wrap(errors.New("guru meditation"), http.StatusTeapot)
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/", nil)
+	r.Header.Set("Accept", "application/json")
+	ServeError(w, r, err)
+	if w.Result().StatusCode != StatusCode(err) {
+		t.Fatal()
+	}
+	if !strings.HasPrefix(w.Header().Get("Content-Type"), "application/problem+json") {
+		t.Fatal()
+	}
+}
+
+func TestErrorMarshalXML(t *testing.T) {
+	err := Errorf(http.StatusTeapot, "guru meditation")
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/", nil)
+	r.Header.Set("Accept", "application/xml")
+	ServeError(w, r, err)
+	if w.Result().StatusCode != StatusCode(err) {
+		t.Fatal()
+	}
+	if !strings.HasPrefix(w.Header().Get("Content-Type"), "application/problem+xml") {
+		t.Fatal()
+	}
+}
