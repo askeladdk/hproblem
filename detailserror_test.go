@@ -99,3 +99,11 @@ func TestUnmarshal(t *testing.T) {
 		}
 	})
 }
+
+func TestDetailsUnwrap(t *testing.T) {
+	err := errors.New("")
+	err2 := NewDetailsError(err)
+	if !errors.Is(errors.Unwrap(err2), err) {
+		t.Fatal()
+	}
+}

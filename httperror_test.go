@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+type customError struct{}
+
+func (err customError) StatusCode() int {
+	return 123
+}
+
+func (err customError) Error() string {
+	return "hello"
+}
+
+func (err customError) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(err.StatusCode())
+	fmt.Fprintf(w, "hello")
+}
+
 func TestServeError(t *testing.T) {
 	t.Run("XML", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -46,6 +61,38 @@ func TestServeError(t *testing.T) {
 			t.Fatal()
 		}
 	})
+
+	t.Run("nil", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("GET", "/", nil)
+		ServeError(w, r, nil)
+		if w.Result().StatusCode != http.StatusOK {
+			t.Fatal()
+		}
+		if w.Body.String() != http.StatusText(http.StatusOK)+"\n" {
+			t.Fatal()
+		}
+	})
+
+	t.Run("custom", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("GET", "/", nil)
+		ServeError(w, r, customError{})
+		if w.Result().StatusCode != 123 {
+			t.Fatal(w.Result().StatusCode)
+		}
+		if w.Body.String() != "hello" {
+			t.Fatal()
+		}
+	})
+}
+
+func TestUnwrap(t *testing.T) {
+	err := errors.New("")
+	err2 := Wrap(err, 444)
+	if !errors.Is(errors.Unwrap(err2), err) {
+		t.Fatal()
+	}
 }
 
 type mockTemporaryError struct{}
