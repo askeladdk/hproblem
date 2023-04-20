@@ -55,10 +55,10 @@ var err error = &TraceError{
 }
 ```
 
-Use the predefined `ErrStatus*` errors to serve HTTP status codes without needing to wrap. This is convenient in cases where it is not needed to attach extra information to an error. Every status code present in the `http` package has an equivalent error in `hproblem`. Handlers `MethodNotFound` and `NotFound` are also provided.
+Use the predefined `Status*` errors to serve HTTP status codes without needing to wrap. This is convenient in cases where it is not needed to attach extra information to an error. Every status code present in the `http` package has an equivalent error in `hproblem`. Handlers `MethodNotFound` and `NotFound` are also provided.
 
 ```go
-hproblem.ServeError(w, r, hproblem.ErrStatusForbidden)
+hproblem.ServeError(w, r, hproblem.StatusForbidden)
 ```
 
 Read the rest of the [documentation on pkg.go.dev](https://pkg.go.dev/github.com/askeladdk/hproblem). It's easy-peasy!
