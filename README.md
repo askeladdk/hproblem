@@ -2,6 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/askeladdk/hproblem?status.png)](https://godoc.org/github.com/askeladdk/hproblem)
 [![Go Report Card](https://goreportcard.com/badge/github.com/askeladdk/hproblem)](https://goreportcard.com/report/github.com/askeladdk/hproblem)
+[![Coverage Status](https://coveralls.io/repos/github/askeladdk/hproblem/badge.svg?branch=master)](https://coveralls.io/github/askeladdk/hproblem?branch=master)
 
 ## Overview
 
