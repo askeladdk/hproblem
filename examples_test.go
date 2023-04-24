@@ -58,7 +58,7 @@ func ExampleServeError_text() {
 func ExampleStatusCode() {
 	fmt.Println(hproblem.StatusCode(nil))
 	fmt.Println(hproblem.StatusCode(io.EOF))
-	fmt.Println(hproblem.StatusCode(hproblem.Wrap(io.EOF, http.StatusBadRequest)))
+	fmt.Println(hproblem.StatusCode(hproblem.Wrap(http.StatusBadRequest, io.EOF)))
 	// Output:
 	// 200
 	// 500

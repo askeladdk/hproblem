@@ -20,11 +20,11 @@ The two basic functions are `Wrap` and `ServeError`. Wrap associates an error wi
 
 ```go
 func endpoint(w http.ResponseWriter, r *http.Request) {
-    hproblem.ServeError(w, r, hproblem.Wrap(io.EOF, http.StatusBadRequest))
+    hproblem.ServeError(w, r, hproblem.Wrap(http.StatusBadRequest, io.EOF))
 }
 ```
 
-Use `Errorf` as a shorthand for `Wrap(fmt.Errorf(...), statusCode)`.
+Use `Errorf` as a shorthand for `Wrap(statusCode, fmt.Errorf(...))`.
 
 ```go
 err = hproblem.Errorf(http.StatusBadRequest, "package: error: %w", err)
@@ -50,7 +50,7 @@ type TraceError struct {
 }
 
 var err error = &TraceError{
-    DetailsError: hproblem.NewDetailsError(hproblem.Wrap(io.EOF, http.StatusBadRequest)),
+    DetailsError: hproblem.NewDetailsError(hproblem.Wrap(http.StatusBadRequest, io.EOF)),
     TraceID: "42",
 }
 ```

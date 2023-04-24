@@ -21,7 +21,7 @@ type testEmbeddedDetails struct {
 
 func TestProblemDetailsError(t *testing.T) {
 	detail := testEmbeddedDetails{
-		DetailsError: NewDetailsError(Wrap(errors.New("error"), http.StatusBadRequest)),
+		DetailsError: NewDetailsError(Wrap(http.StatusBadRequest, errors.New("error"))),
 		ID:           "myid",
 	}
 

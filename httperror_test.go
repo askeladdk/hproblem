@@ -89,7 +89,7 @@ func TestServeError(t *testing.T) {
 
 func TestUnwrap(t *testing.T) {
 	err := errors.New("")
-	err2 := Wrap(err, 444)
+	err2 := Wrap(444, err)
 	if !errors.Is(errors.Unwrap(err2), err) {
 		t.Fatal()
 	}
@@ -108,7 +108,7 @@ func TestStatusCode(t *testing.T) {
 		{nil, http.StatusOK},
 		{context.DeadlineExceeded, http.StatusGatewayTimeout},
 		{fmt.Errorf("error: %w", mockTemporaryError{}), http.StatusServiceUnavailable},
-		{Wrap(errors.New("bla"), http.StatusBadRequest), http.StatusBadRequest},
+		{Wrap(http.StatusBadRequest, errors.New("bla")), http.StatusBadRequest},
 		{errors.New("bla"), http.StatusInternalServerError},
 	} {
 		if StatusCode(testCase.Err) != testCase.Expected {
@@ -118,7 +118,7 @@ func TestStatusCode(t *testing.T) {
 }
 
 func TestErrorMarshalJSON(t *testing.T) {
-	err := Wrap(errors.New("guru meditation"), http.StatusTeapot)
+	err := Wrap(http.StatusTeapot, errors.New("guru meditation"))
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", nil)
 	r.Header.Set("Accept", "application/json")

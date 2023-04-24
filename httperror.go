@@ -70,13 +70,13 @@ func serveXML(w http.ResponseWriter, v interface{}, statusCode int) {
 }
 
 // Wrap associates an error with a status code.
-func Wrap(err error, statusCode int) error {
+func Wrap(statusCode int, err error) error {
 	return &httpError{err, statusCode}
 }
 
 // Errorf is a shorthand for Wrap(fmt.Errorf(...), statusCode).
 func Errorf(statusCode int, format string, a ...interface{}) error {
-	return Wrap(fmt.Errorf(format, a...), statusCode)
+	return Wrap(statusCode, fmt.Errorf(format, a...))
 }
 
 // StatusCode reports the HTTP status code associated with err
